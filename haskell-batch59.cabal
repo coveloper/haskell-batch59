@@ -56,7 +56,15 @@ executable haskell-batch59
     -- other-extensions:
 
     -- Other library packages from which modules are imported.
-    build-depends:    base >=4.14 && <4.15
+    build-depends:    
+                      --base >=4.14 && <4.15,
+                      base,
+                      mtl,
+                      --MonadRandom,
+                      random
+                      --shuffle
+                      
+                      
 
     -- Directories containing source files.
     -- hs-source-dirs:
