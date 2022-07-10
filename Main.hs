@@ -81,7 +81,8 @@ cardToString Ace = "A"
 
 data Player         = Player {
     name            :: String,
-    numCardsAquired :: Int
+    numCardsAquired :: Int,
+    cards           :: [Card]
   } deriving Show
 
 data Game       = Game {
@@ -104,16 +105,55 @@ initGame player1 player2 = Game {
 --  }
 --  return $ game
 
+--cardsHolding :: Player -> Int
+--cardsHolding player = do
+--    let cardsRemaining = player{numCardsAquired}
+--    return cardsRemaining
+
+cardsHolding :: Player -> Int
+cardsHolding (Player {name = a, numCardsAquired = b, cards = c} ) = b
+
+playerFromGame :: Game -> Player
+playerFromGame (Game {dealer = a, player = b} ) = b
+
+dealerFromGame :: Game -> Player
+dealerFromGame (Game {dealer = a, player = b} ) = a
+
+evalTurnWinner :: Player -> Player -> Player
+evalTurnWinner dealer player = do
+    dealer
+
+-- turn :: Game -> Player 
+turn :: Game -> IO ()
+turn game
+    | (cardsHolding (dealerFromGame game)) == 0 = putStrLn "Dealer Lost!"
+        --return dealerFromGame game
+    -- | game.dealer.numCardsAquired == 0 = putStrLn (game.dealer.name ++ "lost! ")
+    -- | game.player.numCardsAquired == 0 = putStrLn (game.player.name ++ "lost! ")
+    | otherwise = do 
+        -- putStrLn "Otherwise called"
+        --let turnWinner = evalTurnWinner (dealerFromGame game) (playerFromGame game)
+        --putStrLn turnWinner.name ++ "won this round"
+        -- return turnWinner
+        putStrLn "OTHERWISE CASE WON"
+
 
 main :: IO ()
 main = do
+
+    -- Set up Game
+
     putStrLn "Hello, what is your name?: "
     playerName <- getLine
     putStrLn $ "Hello " ++ playerName ++ ", Let's play War!"
 
-    let dealer = Player {name = "Dealer", numCardsAquired = 0 }
-    let me = Player {name = playerName, numCardsAquired = 0 }
+    let dealer = Player {name = "Dealer", numCardsAquired = 5, cards = [] }
+    let me = Player {name = playerName, numCardsAquired = 0, cards = [] }
 
     let game = initGame dealer me
+
+    -- Play Game
+    turn game
+    --putStrLn turn.name ++ "won this round"
 
     putStrLn "End"
