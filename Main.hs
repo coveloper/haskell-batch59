@@ -61,24 +61,6 @@ cardToString Queen = "Q"
 cardToString King = "K"
 cardToString Ace = "A"
 
---data WarAction = Deal
---  deriving (Show, Eq, Enum)
-
---data WarObservation = WarObservation
---  { playerScore :: Word
---  , playerHasAce :: Bool
---  , dealerCardShowing :: Card
---  } deriving (Show)
-
---data WarEnvironment = WarEnvironment
---  { currentObservation :: WarObservation
---  , dealerHand :: (Card, Card, [Card]) -- Shown card, hidden card, dealt cards
---  , playerHand :: [Card]
---  , deck :: [Card]
---  , randomGenerator :: Rand.StdGen
---  , playerHasStood :: Bool
---  } deriving (Show)
-
 data Player         = Player {
     name            :: String,
     numCardsAquired :: Int,
@@ -127,6 +109,7 @@ evalTurnWinner dealer player = do
 turn :: Game -> IO ()
 turn game
     | (cardsHolding (dealerFromGame game)) == 0 = putStrLn "Dealer Lost!"
+    | (cardsHolding (playerFromGame game)) == 0 = putStrLn "You Lost!"
         --return dealerFromGame game
     -- | game.dealer.numCardsAquired == 0 = putStrLn (game.dealer.name ++ "lost! ")
     -- | game.player.numCardsAquired == 0 = putStrLn (game.player.name ++ "lost! ")
@@ -147,7 +130,7 @@ main = do
     playerName <- getLine
     putStrLn $ "Hello " ++ playerName ++ ", Let's play War!"
 
-    let dealer = Player {name = "Dealer", numCardsAquired = 5, cards = [] }
+    let dealer = Player {name = "Dealer", numCardsAquired = 1, cards = [] }
     let me = Player {name = playerName, numCardsAquired = 0, cards = [] }
 
     let game = initGame dealer me
