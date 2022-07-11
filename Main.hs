@@ -64,21 +64,6 @@ cardToString Jack = "J"
 cardToString Queen = "Q"
 cardToString King = "K"
 
-
---shuffleCards :: Deck -> Deck -> IO Deck
---shuffleCards shuffled [] = return shuffled
---shuffleCards shuffled unshuffled = do
---  randomCardIndex <- randomRIO (0, length unshuffled - 1)
---  let randomCard = unshuffled !! randomCardIndex
---      unshuffledBefore = take randomCardIndex unshuffled
---      unshuffledAfter = drop (randomCardIndex + 1) unshuffled
---  
---  shuffleCards (randomCard:shuffled) (unshuffledBefore ++ unshuffledAfter)
-
---shuffleDeck :: IO Deck
---shuffleDeck = shuffleCards [] fullDeck
-
-
 data Player         = Player {
     name            :: String,
     cards           :: [Card]
