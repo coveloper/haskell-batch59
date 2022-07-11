@@ -6,6 +6,7 @@ import Control.Monad.Random
 --import Control.Monad.State
 import Control.Monad.IO.Class
 --import Data.List (sort, intercalate)
+import Language.Haskell.Exts
 
 import qualified System.Random as Rand
 import System.Random.Shuffle (shuffleM)
@@ -65,7 +66,7 @@ cardToString Queen = "Q"
 cardToString King = "K"
 
 data Player         = Player {
-    name            :: String,
+    username            :: String,
     cards           :: [Card]
   } deriving Show
 
@@ -89,13 +90,8 @@ initGame player1 player2 = Game {
 --  }
 --  return $ game
 
---cardsHolding :: Player -> Int
---cardsHolding player = do
---    let cardsRemaining = player{numCardsAquired}
---    return cardsRemaining
-
 cardsHolding :: Player -> [Card]
-cardsHolding (Player {name = a, cards = b} ) = b
+cardsHolding (Player {username = a, cards = b} ) = b
 
 playerFromGame :: Game -> Player
 playerFromGame (Game {dealer = a, player = b} ) = b
@@ -146,17 +142,22 @@ turn game
         if turnResult == DealerWon 
           then do 
             putStrLn "Dealer won that round!"
+            print ("Dealer now has " ++ showInt (length (cardsHolding (dealerFromGame game))) ++ " cards")
+            print ("You now have " ++ showInt (length (cardsHolding (playerFromGame game))) ++ " cards")
           else
             if turnResult == PlayerWon 
-              then putStrLn "Player won that round!"
+              then do
+                putStrLn "Player won that round!"
+                print ("Dealer now has " ++ showInt (length (cardsHolding (dealerFromGame game))) ++ " cards")
+                print ("You now have " ++ showInt (length (cardsHolding (playerFromGame game))) ++ " cards")
               else
             if turnResult == War 
-              then putStrLn "Cards match, THIS IS WAR!"
+              then do
+                putStrLn "Cards match, THIS IS WAR!"
               else
                 putStrLn "TURN RESULT == WAR ELSE"
         turn game
       
-
 main :: IO ()
 main = do
 
@@ -174,8 +175,8 @@ main = do
     let playerCards = snd splitDeckIn2
 
     -- Create Player instances
-    let dealer = Player {name = "Dealer", cards = dealerCards }
-    let me = Player {name = playerName, cards = playerCards }
+    let dealer = Player {username = "Dealer", cards = dealerCards }
+    let me = Player {username = playerName, cards = playerCards }
 
     -- Deal Cards to each player
 
