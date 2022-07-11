@@ -145,7 +145,11 @@ turn game
         let dealerCard = head dealerCards
         let playerCard = head playerCards
 
-        --putStrLn "Dealer draws a " ++ dealerCard
+        putStrLn "Dealer Draws a: "
+        putStrLn (cardToString dealerCard)
+
+        putStrLn "You Draw a: "
+        putStrLn (cardToString playerCard)
 
         let turnResult = evalTurnWinner (dealerFromGame game) (playerFromGame game)
         if turnResult == DealerWon 
