@@ -27,30 +27,31 @@ data Card =
   Nine | Ten | Jack | Queen | King
   deriving (Show, Eq, Enum, Ord)
 
-baseDeck :: [Card]
-baseDeck = concat $ replicate 4 fullSuit
+fullDeck :: [Card]
+fullDeck = concat $ replicate 4 fullSuit
   where
     fullSuit = [ Ace, Two, Three, Four, 
                  Five, Six, Seven, Eight, 
                  Nine, Ten, Jack, Queen, King
                ]
 
-cardScore :: Card -> Word
-cardScore Two = 2
-cardScore Three = 3
-cardScore Four = 4
-cardScore Five = 5
-cardScore Six = 6
-cardScore Seven = 7
-cardScore Eight = 8
-cardScore Nine = 9
-cardScore Ten = 10
-cardScore Jack = 10
-cardScore Queen = 10
-cardScore King = 10
-cardScore Ace = 1
+cardValue :: Card -> Word
+cardValue Ace = 1
+cardValue Two = 2
+cardValue Three = 3
+cardValue Four = 4
+cardValue Five = 5
+cardValue Six = 6
+cardValue Seven = 7
+cardValue Eight = 8
+cardValue Nine = 9
+cardValue Ten = 10
+cardValue Jack = 10
+cardValue Queen = 10
+cardValue King = 10
 
 cardToString :: Card -> String
+cardToString Ace = "A"
 cardToString Two = "2"
 cardToString Three = "3"
 cardToString Four = "4"
@@ -63,7 +64,7 @@ cardToString Ten = "10"
 cardToString Jack = "J"
 cardToString Queen = "Q"
 cardToString King = "K"
-cardToString Ace = "A"
+
 
 data Player         = Player {
     name            :: String,
@@ -166,8 +167,8 @@ main = do
     
 
     -- Create Player instances
-    let dealer = Player {name = "Dealer", cards = [] }
-    let me = Player {name = playerName, cards = [] }
+    let dealer = Player {name = "Dealer", cards = fullDeck }
+    let me = Player {name = playerName, cards = fullDeck }
 
     -- Deal Cards to each player
 
