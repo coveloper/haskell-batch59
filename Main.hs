@@ -2,20 +2,13 @@ module Main where
 
 import System.Random
 import Control.Monad
---import Control.Monad.Random
+import Control.Monad.Random
 --import Control.Monad.State
 import Control.Monad.IO.Class
 --import Data.List (sort, intercalate)
 
 import qualified System.Random as Rand
---import System.Random.Shuffle (shuffleM)
-
--- My Imports
---import Data
-
--- Shuffled Deck
---shuffledDeck :: Rand.StdGen -> ([Card], Rand.StdGen)
---shuffledDeck gen = runRand (shuffleM baseDeck) gen
+import System.Random.Shuffle (shuffleM)
 
 data TurnResult =
   DealerWon | PlayerWon | War
@@ -27,13 +20,19 @@ data Card =
   Nine | Ten | Jack | Queen | King
   deriving (Show, Eq, Enum, Ord)
 
-fullDeck :: [Card]
+type Deck = [Card]
+
+fullDeck :: Deck
 fullDeck = concat $ replicate 4 fullSuit
   where
     fullSuit = [ Ace, Two, Three, Four, 
                  Five, Six, Seven, Eight, 
                  Nine, Ten, Jack, Queen, King
                ]
+
+-- Shuffled Deck
+shuffledDeck :: Rand.StdGen -> ([Card], Rand.StdGen)
+shuffledDeck gen = runRand (shuffleM fullDeck) gen
 
 cardValue :: Card -> Word
 cardValue Ace = 1
@@ -64,6 +63,20 @@ cardToString Ten = "10"
 cardToString Jack = "J"
 cardToString Queen = "Q"
 cardToString King = "K"
+
+
+--shuffleCards :: Deck -> Deck -> IO Deck
+--shuffleCards shuffled [] = return shuffled
+--shuffleCards shuffled unshuffled = do
+--  randomCardIndex <- randomRIO (0, length unshuffled - 1)
+--  let randomCard = unshuffled !! randomCardIndex
+--      unshuffledBefore = take randomCardIndex unshuffled
+--      unshuffledAfter = drop (randomCardIndex + 1) unshuffled
+--  
+--  shuffleCards (randomCard:shuffled) (unshuffledBefore ++ unshuffledAfter)
+
+--shuffleDeck :: IO Deck
+--shuffleDeck = shuffleCards [] fullDeck
 
 
 data Player         = Player {
@@ -159,16 +172,22 @@ main :: IO ()
 main = do
 
     -- Set up Game
+    gen <- getStdGen
 
     putStrLn "Hello, what is your name?: "
     playerName <- getLine
     putStrLn $ "Hello " ++ playerName ++ ", Let's play War!"
 
-    
+    -- Shuffle Deck
+    --let shuffledDeck = shuffleDeck
+    let (newDeck, newGen) = shuffledDeck gen
+    let splitDeckIn2 = splitAt 26 newDeck
+    let dealerCards = fst splitDeckIn2
+    let playerCards = snd splitDeckIn2
 
     -- Create Player instances
-    let dealer = Player {name = "Dealer", cards = fullDeck }
-    let me = Player {name = playerName, cards = fullDeck }
+    let dealer = Player {name = "Dealer", cards = dealerCards }
+    let me = Player {name = playerName, cards = playerCards }
 
     -- Deal Cards to each player
 

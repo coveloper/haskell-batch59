@@ -60,9 +60,9 @@ executable haskell-batch59
                       --base >=4.14 && <4.15,
                       base,
                       mtl,
-                      --MonadRandom,
-                      random
-                      --shuffle
+                      MonadRandom,
+                      random,
+                      random-shuffle
                       
                       
 
