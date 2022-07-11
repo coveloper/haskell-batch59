@@ -139,18 +139,19 @@ turn game
     | (length (cardsHolding (dealerFromGame game))) == 0 = putStrLn "Dealer Lost!"
     | (length (cardsHolding (playerFromGame game))) == 0 = putStrLn "You Lost!"
     | otherwise = do 
-        -- putStrLn "Otherwise called"
-        
+        -- The Draw
+        let dealerCards = (cardsHolding (dealerFromGame game))
+        let playerCards = (cardsHolding (playerFromGame game))
+        let dealerCard = head dealerCards
+        let playerCard = head playerCards
+
+        --putStrLn "Dealer draws a " ++ dealerCard
+
         let turnResult = evalTurnWinner (dealerFromGame game) (playerFromGame game)
         if turnResult == DealerWon 
           then do 
             putStrLn "Dealer won that round!"
             -- Dealer takes the cards
-            let dealerCards = (cardsHolding (dealerFromGame game))
-            let playerCards = (cardsHolding (playerFromGame game))
-
-            let dealerCard = head dealerCards
-            let playerCard = head playerCards
 
             let dealerCardsAfterWin = ((tail dealerCards) ++ [(head playerCards)] ++ [(head dealerCards)])
             let playerCardsAfterLoss = tail playerCards
@@ -173,11 +174,6 @@ turn game
               then do
                 putStrLn "Player won that round!"
                 -- Player takes the cards
-                let dealerCards = (cardsHolding (dealerFromGame game))
-                let playerCards = (cardsHolding (playerFromGame game))
-
-                let dealerCard = head dealerCards
-                let playerCard = head playerCards
 
                 let dealerCardsAfterLoss = tail dealerCards
                 let playerCardsAfterWin = ((tail playerCards) ++ [(head playerCards)] ++ [(head dealerCards)])
