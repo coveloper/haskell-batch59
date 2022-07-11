@@ -158,15 +158,19 @@ turn game
     | otherwise = do 
         -- putStrLn "Otherwise called"
         let turnResult = evalTurnWinner (dealerFromGame game) (playerFromGame game)
-        --if turnResult == Dealer then do
-        --    putStrLn "Dealer won that round!"
-        --    else
-        --      if turnResult == Player then do
-        --          putStrLn "Player won that round!"
-        --        else
-        --            if turnResult == War then do
-        --               putStrLn "Cards match, THIS IS WAR!"
+        if turnResult == DealerWon 
+          then do 
+            putStrLn "Dealer won that round!"
+          else
+            if turnResult == PlayerWon 
+              then putStrLn "Player won that round!"
+              else
+            if turnResult == War 
+              then putStrLn "Cards match, THIS IS WAR!"
+              else
+                putStrLn "TURN RESULT == WAR ELSE"
         turn game
+      
 
 main :: IO ()
 main = do
@@ -179,7 +183,6 @@ main = do
     putStrLn $ "Hello " ++ playerName ++ ", Let's play War!"
 
     -- Shuffle Deck
-    --let shuffledDeck = shuffleDeck
     let (newDeck, newGen) = shuffledDeck gen
     let splitDeckIn2 = splitAt 26 newDeck
     let dealerCards = fst splitDeckIn2
