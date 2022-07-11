@@ -1,3 +1,5 @@
+{-# LANGUAGE NamedFieldPuns, RecordWildCards #-}
+
 module Main where
 
 import System.Random
@@ -138,25 +140,69 @@ turn game
     | (length (cardsHolding (playerFromGame game))) == 0 = putStrLn "You Lost!"
     | otherwise = do 
         -- putStrLn "Otherwise called"
+        
         let turnResult = evalTurnWinner (dealerFromGame game) (playerFromGame game)
         if turnResult == DealerWon 
           then do 
             putStrLn "Dealer won that round!"
-            print ("Dealer now has " ++ showInt (length (cardsHolding (dealerFromGame game))) ++ " cards")
-            print ("You now have " ++ showInt (length (cardsHolding (playerFromGame game))) ++ " cards")
+            -- Dealer takes the cards
+            let dealerCards = (cardsHolding (dealerFromGame game))
+            let playerCards = (cardsHolding (playerFromGame game))
+
+            let dealerCard = head dealerCards
+            let playerCard = head playerCards
+
+            let dealerCardsAfterWin = ((tail dealerCards) ++ [(head playerCards)] ++ [(head dealerCards)])
+            let playerCardsAfterLoss = tail playerCards
+
+            let dealer = (dealerFromGame game)
+            let newDealer = dealer{cards = dealerCardsAfterWin}
+
+            let me = (playerFromGame game)
+            let newMe = me{cards = playerCardsAfterLoss}
+            
+            let newGame = initGame newDealer newMe
+
+            putStrLn "Here is the new game state:\n"
+            print ("Dealer now has " ++ showInt (length (cardsHolding (dealerFromGame newGame))) ++ " cards")
+            print ("You now have " ++ showInt (length (cardsHolding (playerFromGame newGame))) ++ " cards")
+            putStrLn "\n\n"
+            turn newGame
           else
             if turnResult == PlayerWon 
               then do
                 putStrLn "Player won that round!"
-                print ("Dealer now has " ++ showInt (length (cardsHolding (dealerFromGame game))) ++ " cards")
-                print ("You now have " ++ showInt (length (cardsHolding (playerFromGame game))) ++ " cards")
+                -- Player takes the cards
+                let dealerCards = (cardsHolding (dealerFromGame game))
+                let playerCards = (cardsHolding (playerFromGame game))
+
+                let dealerCard = head dealerCards
+                let playerCard = head playerCards
+
+                let dealerCardsAfterLoss = tail dealerCards
+                let playerCardsAfterWin = ((tail playerCards) ++ [(head playerCards)] ++ [(head dealerCards)])
+
+                let dealer = (dealerFromGame game)
+                let newDealer = dealer{cards = dealerCardsAfterLoss}
+
+                let me = (playerFromGame game)
+                let newMe = me{cards = playerCardsAfterWin}
+            
+                let newGame = initGame newDealer newMe
+
+                putStrLn "Here is the new game state:\n"
+                print ("Dealer now has " ++ showInt (length (cardsHolding (dealerFromGame newGame))) ++ " cards")
+                print ("You now have " ++ showInt (length (cardsHolding (playerFromGame newGame))) ++ " cards")
+                putStrLn "\n\n"
+                turn newGame
               else
             if turnResult == War 
               then do
                 putStrLn "Cards match, THIS IS WAR!"
+                --turn game
               else
                 putStrLn "TURN RESULT == WAR ELSE"
-        turn game
+        --turn game
       
 main :: IO ()
 main = do
@@ -179,10 +225,7 @@ main = do
     let me = Player {username = playerName, cards = playerCards }
 
     -- Deal Cards to each player
-
     let game = initGame dealer me
-
-    
 
     -- Play Game
     turn game
