@@ -5,9 +5,7 @@ module Main where
 import System.Random
 import Control.Monad
 import Control.Monad.Random
---import Control.Monad.State
 import Control.Monad.IO.Class
---import Data.List (sort, intercalate)
 import Language.Haskell.Exts
 
 import qualified System.Random as Rand
@@ -68,7 +66,7 @@ cardToString Queen = "Q"
 cardToString King = "K"
 
 data Player         = Player {
-    username            :: String,
+    username        :: String,
     cards           :: [Card]
   } deriving Show
 
@@ -82,15 +80,6 @@ initGame player1 player2 = Game {
        dealer = player1,
        player = player2
      }
-
-
---initGame :: MonadIO m => m Game
---initGame = do
---  let game      = Game {
---    player     :: Player,
---    dealer     :: Player
---  }
---  return $ game
 
 cardsHolding :: Player -> [Card]
 cardsHolding (Player {username = a, cards = b} ) = b
@@ -199,6 +188,7 @@ turn game
             if turnResult == War 
               then do
                 putStrLn "Cards match, THIS IS WAR!"
+                -- TODO: Recursively call turn logic with a temporary store for cards drawn, winner takes all cards from the War
                 --turn game
               else
                 putStrLn "TURN RESULT == WAR ELSE"
@@ -229,6 +219,4 @@ main = do
 
     -- Play Game
     turn game
-    --putStrLn turn.name ++ "won this round"
-
     putStrLn "End"
