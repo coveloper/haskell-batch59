@@ -17,11 +17,15 @@ import qualified System.Random as Rand
 --shuffledDeck :: Rand.StdGen -> ([Card], Rand.StdGen)
 --shuffledDeck gen = runRand (shuffleM baseDeck) gen
 
+data TurnResult =
+  DealerWon | PlayerWon | War
+  deriving (Show, Eq, Enum)
+
 data Card =
   Ace | Two | Three | Four | 
   Five | Six | Seven | Eight | 
   Nine | Ten | Jack | Queen | King
-  deriving (Show, Eq, Enum)
+  deriving (Show, Eq, Enum, Ord)
 
 baseDeck :: [Card]
 baseDeck = concat $ replicate 4 fullSuit
@@ -63,7 +67,6 @@ cardToString Ace = "A"
 
 data Player         = Player {
     name            :: String,
-    numCardsAquired :: Int,
     cards           :: [Card]
   } deriving Show
 
@@ -92,8 +95,8 @@ initGame player1 player2 = Game {
 --    let cardsRemaining = player{numCardsAquired}
 --    return cardsRemaining
 
-cardsHolding :: Player -> Int
-cardsHolding (Player {name = a, numCardsAquired = b, cards = c} ) = b
+cardsHolding :: Player -> [Card]
+cardsHolding (Player {name = a, cards = b} ) = b
 
 playerFromGame :: Game -> Player
 playerFromGame (Game {dealer = a, player = b} ) = b
@@ -101,25 +104,55 @@ playerFromGame (Game {dealer = a, player = b} ) = b
 dealerFromGame :: Game -> Player
 dealerFromGame (Game {dealer = a, player = b} ) = a
 
-evalTurnWinner :: Player -> Player -> Player
+dealerHasSameCard :: Card -> Card -> Bool
+dealerHasSameCard dealerCard playerCard
+    | dealerCard == playerCard = True
+    | otherwise = False
+
+dealerHasHigherCard :: Card -> Card -> Bool
+dealerHasHigherCard dealerCard playerCard
+    | dealerCard > playerCard = True
+    | otherwise = False
+
+evalTurnWinner :: Player -> Player -> TurnResult
 evalTurnWinner dealer player = do
-    dealer
+    let dealerCards = cardsHolding dealer
+    let playerCards = cardsHolding player
+
+    let dealerCard = head dealerCards
+    let playerCard = head playerCards
+
+    if dealerHasHigherCard dealerCard playerCard
+        then do
+          DealerWon
+            -- Dealer wins this round
+        else
+            -- Either Player won or it's War
+            if dealerHasSameCard dealerCard playerCard
+                then do
+                  War
+                    -- War!
+                else do
+                  PlayerWon
+                    -- Player won this round
 
 -- turn :: Game -> Player 
 turn :: Game -> IO ()
 turn game
-    | (cardsHolding (dealerFromGame game)) == 0 = putStrLn "Dealer Lost!"
-    | (cardsHolding (playerFromGame game)) == 0 = putStrLn "You Lost!"
-        --return dealerFromGame game
-    -- | game.dealer.numCardsAquired == 0 = putStrLn (game.dealer.name ++ "lost! ")
-    -- | game.player.numCardsAquired == 0 = putStrLn (game.player.name ++ "lost! ")
+    | (length (cardsHolding (dealerFromGame game))) == 0 = putStrLn "Dealer Lost!"
+    | (length (cardsHolding (playerFromGame game))) == 0 = putStrLn "You Lost!"
     | otherwise = do 
         -- putStrLn "Otherwise called"
-        --let turnWinner = evalTurnWinner (dealerFromGame game) (playerFromGame game)
-        --putStrLn turnWinner.name ++ "won this round"
-        -- return turnWinner
-        putStrLn "OTHERWISE CASE WON"
-
+        let turnResult = evalTurnWinner (dealerFromGame game) (playerFromGame game)
+        --if turnResult == Dealer then do
+        --    putStrLn "Dealer won that round!"
+        --    else
+        --      if turnResult == Player then do
+        --          putStrLn "Player won that round!"
+        --        else
+        --            if turnResult == War then do
+        --               putStrLn "Cards match, THIS IS WAR!"
+        turn game
 
 main :: IO ()
 main = do
@@ -130,10 +163,17 @@ main = do
     playerName <- getLine
     putStrLn $ "Hello " ++ playerName ++ ", Let's play War!"
 
-    let dealer = Player {name = "Dealer", numCardsAquired = 1, cards = [] }
-    let me = Player {name = playerName, numCardsAquired = 0, cards = [] }
+    
+
+    -- Create Player instances
+    let dealer = Player {name = "Dealer", cards = [] }
+    let me = Player {name = playerName, cards = [] }
+
+    -- Deal Cards to each player
 
     let game = initGame dealer me
+
+    
 
     -- Play Game
     turn game
